@@ -678,6 +678,7 @@ const Index = () => {
               onClick={generatePDF} 
               className="w-full py-6 text-lg font-semibold"
               size="lg"
+              disabled={!calculations.hasData}
             >
               <FileDown className="w-5 h-5 mr-2" />
               Descargar PDF
