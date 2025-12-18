@@ -356,7 +356,7 @@ const Index = () => {
                   'bg-success'
                 }`}>
                   {calculations.classification === 'not-viable' ? 'NO VIABLE' :
-                   calculations.classification === 'caution' ? 'PRECAUCIÓN' :
+                   calculations.classification === 'caution' ? 'AJUSTADO' :
                    calculations.classification === 'excellent' ? 'EXCELENTE' : 'VIABLE'}
                 </span>
                 <span className={`text-2xl font-mono font-bold ${
@@ -598,7 +598,7 @@ const Index = () => {
               }`}>
                 {calculations.classification === 'pending' ? 'Pendiente' :
                  calculations.classification === 'not-viable' ? 'No Viable' :
-                 calculations.classification === 'caution' ? 'Precaución' :
+                 calculations.classification === 'caution' ? 'Ajustado' :
                  calculations.classification === 'excellent' ? 'Excelente' : 'Viable'}
               </p>
             </Card>
