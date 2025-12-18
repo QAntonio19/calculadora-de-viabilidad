@@ -92,6 +92,11 @@ const Index = () => {
   };
 
   const generateAIInsight = () => {
+    // No generar insight si no hay datos
+    if (!calculations.hasData) {
+      return;
+    }
+    
     setIsGeneratingInsight(true);
     
     // Simular delay de IA
@@ -582,7 +587,7 @@ const Index = () => {
                 </h3>
                 <Button 
                   onClick={generateAIInsight} 
-                  disabled={isGeneratingInsight}
+                  disabled={isGeneratingInsight || !calculations.hasData}
                   size="sm"
                   variant="outline"
                 >
@@ -594,13 +599,17 @@ const Index = () => {
                 </Button>
               </div>
               
-              {aiInsight ? (
+              {!calculations.hasData ? (
+                <p className="text-sm text-muted-foreground italic">
+                  Ingresa el precio de venta y al menos un gasto para generar el análisis.
+                </p>
+              ) : aiInsight ? (
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {aiInsight}
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground italic">
-                  Insight no disponible. Haz clic en "Generar" para obtener un análisis.
+                  Haz clic en "Generar" para obtener un análisis con IA.
                 </p>
               )}
             </Card>
