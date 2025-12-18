@@ -403,16 +403,16 @@ const Index = () => {
                   <label className="text-sm font-medium text-foreground">
                     Precio Venta Estimado (PVE)
                   </label>
-                  <Input
-                    type="number"
-                    value={salePrice || ""}
-                    onChange={(e) => setSalePrice(Number(e.target.value) || 0)}
-                    className="input-financial text-lg"
-                    placeholder="2,000,000"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {formatCurrency(salePrice)}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-semibold text-muted-foreground">$</span>
+                    <Input
+                      type="number"
+                      value={salePrice || ""}
+                      onChange={(e) => setSalePrice(Number(e.target.value) || 0)}
+                      className="input-financial text-lg"
+                      placeholder="2,000,000"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground">
