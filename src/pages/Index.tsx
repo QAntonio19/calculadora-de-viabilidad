@@ -21,21 +21,21 @@ interface PropertyData {
 }
 
 const INITIAL_EXPENSES: Expense[] = [
-  { id: "hipoteca", name: "Compra / Hipoteca", amount: 1200000 },
-  { id: "remodelacion", name: "Remodelación", amount: 250000 },
-  { id: "reembolso", name: "Reembolso Propietario", amount: 50000 },
-  { id: "gestion", name: "Gestión de Crédito", amount: 15000 },
-  { id: "predial", name: "Predial", amount: 8000 },
-  { id: "agua", name: "Agua", amount: 1200 },
-  { id: "luz", name: "Electricidad", amount: 2500 },
-  { id: "avaluo", name: "Avalúo / Planos", amount: 10000 },
+  { id: "hipoteca", name: "Compra / Hipoteca", amount: 0 },
+  { id: "remodelacion", name: "Remodelación", amount: 0 },
+  { id: "reembolso", name: "Reembolso Propietario", amount: 0 },
+  { id: "gestion", name: "Gestión de Crédito", amount: 0 },
+  { id: "predial", name: "Predial", amount: 0 },
+  { id: "agua", name: "Agua", amount: 0 },
+  { id: "luz", name: "Electricidad", amount: 0 },
+  { id: "avaluo", name: "Avalúo / Planos", amount: 0 },
   { id: "isr", name: "ISR (Opcional)", amount: 0 },
-  { id: "contingencia", name: "Contingencia / Otros", amount: 30000 },
+  { id: "contingencia", name: "Contingencia / Otros", amount: 0 },
 ];
 
 const Index = () => {
-  const [salePrice, setSalePrice] = useState<number>(2000000);
-  const [commissionPercentage, setCommissionPercentage] = useState<number>(5);
+  const [salePrice, setSalePrice] = useState<number>(0);
+  const [commissionPercentage, setCommissionPercentage] = useState<number>(0);
   const [expenses, setExpenses] = useState<Expense[]>(INITIAL_EXPENSES);
   const [propertyData, setPropertyData] = useState<PropertyData>({
     accountHolder: "",
