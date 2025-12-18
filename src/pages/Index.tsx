@@ -68,6 +68,20 @@ const Index = () => {
     
     // Verificar si hay datos suficientes para mostrar clasificación
     const hasData = salePrice > 0 && totalExpenses > 0;
+    
+    // Clasificación: 'excellent' (>20%), 'viable' (>10%), 'caution' (0-10%), 'not-viable' (<0)
+    let classification: 'pending' | 'excellent' | 'viable' | 'caution' | 'not-viable' = 'pending';
+    if (hasData) {
+      if (superavitDeficit <= 0) {
+        classification = 'not-viable';
+      } else if (marginBenefit <= 10) {
+        classification = 'caution';
+      } else if (marginBenefit <= 20) {
+        classification = 'viable';
+      } else {
+        classification = 'excellent';
+      }
+    }
 
     return {
       expensesWithPercentage,
@@ -78,7 +92,8 @@ const Index = () => {
       marginBenefit,
       roi,
       isViable: superavitDeficit > 0,
-      hasData
+      hasData,
+      classification
     };
   }, [expenses, salePrice, commissionPercentage]);
 
@@ -322,31 +337,36 @@ const Index = () => {
 
         {/* Status Banner */}
         <div className={`flex items-center justify-between p-4 rounded-lg ${
-          !calculations.hasData
-            ? 'bg-muted border-2 border-border'
-            : calculations.isViable 
-              ? 'bg-success/20 border-2 border-success' 
-              : 'bg-destructive/20 border-2 border-destructive'
+          calculations.classification === 'pending' ? 'bg-muted border-2 border-border' :
+          calculations.classification === 'not-viable' ? 'bg-destructive/20 border-2 border-destructive' :
+          calculations.classification === 'caution' ? 'bg-amber-500/20 border-2 border-amber-500' :
+          'bg-success/20 border-2 border-success'
         }`}>
           <span className="text-lg font-semibold text-foreground">CLASIFICACIÓN</span>
           <div className="flex items-center gap-4">
-            {calculations.hasData ? (
+            {calculations.classification === 'pending' ? (
+              <span className="px-4 py-2 rounded font-bold text-lg bg-muted text-muted-foreground">
+                PENDIENTE
+              </span>
+            ) : (
               <>
-                <span className={`px-4 py-2 rounded font-bold text-lg ${
-                  calculations.isViable ? 'status-superavit' : 'status-deficit'
+                <span className={`px-4 py-2 rounded font-bold text-lg text-white ${
+                  calculations.classification === 'not-viable' ? 'bg-destructive' :
+                  calculations.classification === 'caution' ? 'bg-amber-500' :
+                  'bg-success'
                 }`}>
-                  {calculations.isViable ? 'VIABLE' : 'NO VIABLE'}
+                  {calculations.classification === 'not-viable' ? 'NO VIABLE' :
+                   calculations.classification === 'caution' ? 'PRECAUCIÓN' :
+                   calculations.classification === 'excellent' ? 'EXCELENTE' : 'VIABLE'}
                 </span>
                 <span className={`text-2xl font-mono font-bold ${
-                  calculations.isViable ? 'text-success' : 'text-destructive'
+                  calculations.classification === 'not-viable' ? 'text-destructive' :
+                  calculations.classification === 'caution' ? 'text-amber-600' :
+                  'text-success'
                 }`}>
                   {formatCurrency(calculations.superavitDeficit)}
                 </span>
               </>
-            ) : (
-              <span className="px-4 py-2 rounded font-bold text-lg bg-muted text-muted-foreground">
-                PENDIENTE
-              </span>
             )}
           </div>
         </div>
@@ -528,15 +548,17 @@ const Index = () => {
                 </div>
 
                 <div className={`flex justify-between items-center py-3 px-3 rounded-lg ${
-                  !calculations.hasData
-                    ? 'bg-muted'
-                    : calculations.isViable ? 'bg-success/20' : 'bg-destructive/20'
+                  calculations.classification === 'pending' ? 'bg-muted' :
+                  calculations.classification === 'not-viable' ? 'bg-destructive/20' :
+                  calculations.classification === 'caution' ? 'bg-amber-500/20' :
+                  'bg-success/20'
                 }`}>
                   <span className="font-semibold text-foreground">Superávit / Déficit</span>
                   <span className={`font-mono font-bold text-lg ${
-                    !calculations.hasData
-                      ? 'text-muted-foreground'
-                      : calculations.isViable ? 'text-success' : 'text-destructive'
+                    calculations.classification === 'pending' ? 'text-muted-foreground' :
+                    calculations.classification === 'not-viable' ? 'text-destructive' :
+                    calculations.classification === 'caution' ? 'text-amber-600' :
+                    'text-success'
                   }`}>
                     {calculations.hasData ? formatCurrency(calculations.superavitDeficit) : '-'}
                   </span>
@@ -560,21 +582,24 @@ const Index = () => {
 
             {/* Clasificación de Viabilidad */}
             <Card className={`p-6 animate-slide-up ${
-              !calculations.hasData
-                ? 'bg-muted/50 border-2 border-border'
-                : calculations.isViable 
-                  ? 'bg-success/10 border-2 border-success' 
-                  : 'bg-destructive/10 border-2 border-destructive'
+              calculations.classification === 'pending' ? 'bg-muted/50 border-2 border-border' :
+              calculations.classification === 'not-viable' ? 'bg-destructive/10 border-2 border-destructive' :
+              calculations.classification === 'caution' ? 'bg-amber-500/10 border-2 border-amber-500' :
+              'bg-success/10 border-2 border-success'
             }`}>
               <h3 className="text-sm font-medium text-muted-foreground mb-2">
                 Clasificación de Viabilidad
               </h3>
               <p className={`text-3xl font-bold ${
-                !calculations.hasData
-                  ? 'text-muted-foreground'
-                  : calculations.isViable ? 'text-success' : 'text-destructive'
+                calculations.classification === 'pending' ? 'text-muted-foreground' :
+                calculations.classification === 'not-viable' ? 'text-destructive' :
+                calculations.classification === 'caution' ? 'text-amber-600' :
+                'text-success'
               }`}>
-                {!calculations.hasData ? 'Pendiente' : calculations.isViable ? 'Viable' : 'No Viable'}
+                {calculations.classification === 'pending' ? 'Pendiente' :
+                 calculations.classification === 'not-viable' ? 'No Viable' :
+                 calculations.classification === 'caution' ? 'Precaución' :
+                 calculations.classification === 'excellent' ? 'Excelente' : 'Viable'}
               </p>
             </Card>
 
