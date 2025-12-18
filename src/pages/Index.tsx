@@ -226,6 +226,7 @@ const Index = () => {
     y += 12;
 
     // Gastos Table
+    const tableWidth = 95; // Ancho fijo para la tabla de gastos
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
     doc.text("Gastos", margin, y);
@@ -233,12 +234,12 @@ const Index = () => {
 
     // Table Header
     doc.setFillColor(241, 245, 249);
-    doc.rect(margin, y - 4, pageWidth / 2 - margin - 15, 8, 'F');
+    doc.rect(margin, y - 4, tableWidth, 8, 'F');
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
     doc.text("Concepto", margin + 2, y);
-    doc.text("Monto", margin + 70, y, { align: "right" });
-    doc.text("% del Total", pageWidth / 2 - 17, y, { align: "right" });
+    doc.text("Monto", margin + 65, y, { align: "right" });
+    doc.text("% del Total", margin + tableWidth - 2, y, { align: "right" });
     y += 6;
 
     // Table Rows
@@ -247,29 +248,31 @@ const Index = () => {
     calculations.expensesWithPercentage.forEach((expense, index) => {
       if (index % 2 === 0) {
         doc.setFillColor(248, 250, 252);
-        doc.rect(margin, y - 4, pageWidth / 2 - margin - 15, 6, 'F');
+        doc.rect(margin, y - 4, tableWidth, 6, 'F');
       }
       
       const isBold = ["hipoteca", "remodelacion", "reembolso"].includes(expense.id);
       doc.setFont("helvetica", isBold ? "bold" : "normal");
+      doc.setFontSize(7);
       doc.text(expense.name, margin + 2, y);
-      doc.text(formatCurrency(expense.amount), margin + 70, y, { align: "right" });
-      doc.text(`${expense.percentage.toFixed(2)}%`, pageWidth / 2 - 17, y, { align: "right" });
+      doc.text(formatCurrency(expense.amount), margin + 65, y, { align: "right" });
+      doc.text(`${expense.percentage.toFixed(2)}%`, margin + tableWidth - 2, y, { align: "right" });
       y += 6;
     });
 
     // Total de Gastos
     y += 2;
     doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
     doc.setFillColor(241, 245, 249);
-    doc.rect(margin, y - 4, pageWidth / 2 - margin - 15, 7, 'F');
+    doc.rect(margin, y - 4, tableWidth, 7, 'F');
     doc.text("Total de Gastos (TG)", margin + 2, y);
-    doc.text(formatCurrency(calculations.totalExpenses), margin + 70, y, { align: "right" });
-    doc.text(`${calculations.totalPercentage.toFixed(2)}%`, pageWidth / 2 - 17, y, { align: "right" });
+    doc.text(formatCurrency(calculations.totalExpenses), margin + 65, y, { align: "right" });
+    doc.text(`${calculations.totalPercentage.toFixed(2)}%`, margin + tableWidth - 2, y, { align: "right" });
 
     // Right side - Resultados Financieros (al lado de gastos)
-    const rightX = pageWidth / 2 + 5;
-    const rightWidth = pageWidth / 2 - margin - 5;
+    const rightX = margin + tableWidth + 5;
+    const rightWidth = pageWidth - rightX - margin;
     let rightY = startY - 13;
     
     // Resultados Financieros Box
