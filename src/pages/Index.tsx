@@ -64,10 +64,13 @@ const Index = () => {
       percentage: salePrice > 0 ? (exp.amount / salePrice) * 100 : 0
     }));
 
+    const totalPercentage = salePrice > 0 ? (totalExpenses / salePrice) * 100 : 0;
+
     return {
       expensesWithPercentage,
       baseCalculo,
       totalExpenses,
+      totalPercentage,
       superavitDeficit,
       marginBenefit,
       roi,
@@ -472,8 +475,8 @@ const Index = () => {
                       <td className="px-4 py-3 text-right font-mono font-bold text-foreground">
                         {formatCurrency(calculations.totalExpenses)}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono font-bold text-muted-foreground">
-                        -
+                      <td className="px-4 py-3 text-right font-mono font-bold text-primary">
+                        {calculations.totalPercentage.toFixed(2)}%
                       </td>
                     </tr>
                   </tfoot>
