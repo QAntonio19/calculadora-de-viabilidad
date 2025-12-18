@@ -142,6 +142,29 @@ const Index = () => {
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 20;
     let y = 20;
+    
+    // Función helper para obtener colores según clasificación
+    const getClassificationColor = () => {
+      switch (calculations.classification) {
+        case 'excellent': return { r: 34, g: 139, b: 34, bg: [220, 252, 231] }; // Verde
+        case 'viable': return { r: 34, g: 139, b: 34, bg: [220, 252, 231] }; // Verde
+        case 'caution': return { r: 180, g: 120, b: 0, bg: [254, 243, 199] }; // Amarillo/Naranja
+        case 'not-viable': return { r: 220, g: 38, b: 38, bg: [254, 226, 226] }; // Rojo
+        default: return { r: 100, g: 100, b: 100, bg: [240, 240, 240] }; // Gris
+      }
+    };
+    
+    const getClassificationText = () => {
+      switch (calculations.classification) {
+        case 'excellent': return 'Excelente';
+        case 'viable': return 'Viable';
+        case 'caution': return 'Ajustado';
+        case 'not-viable': return 'No Viable';
+        default: return 'Pendiente';
+      }
+    };
+    
+    const colors = getClassificationColor();
 
     // Header
     doc.setFontSize(18);
@@ -195,10 +218,10 @@ const Index = () => {
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
     doc.text("Precio Venta Estimado (PVE)", margin, y);
-    doc.text(formatCurrency(salePrice), pageWidth - margin, y, { align: "right" });
+    doc.text(formatCurrency(salePrice), pageWidth / 2 - 10, y, { align: "right" });
     y += 5;
     doc.text("Comisión por Intermediación (CFI)", margin, y);
-    doc.text(`${commissionPercentage}%`, pageWidth - margin, y, { align: "right" });
+    doc.text(`${commissionPercentage}%`, pageWidth / 2 - 10, y, { align: "right" });
     
     y += 12;
 
@@ -210,104 +233,112 @@ const Index = () => {
 
     // Table Header
     doc.setFillColor(241, 245, 249);
-    doc.rect(margin, y - 4, pageWidth - 2 * margin, 8, 'F');
+    doc.rect(margin, y - 4, pageWidth / 2 - margin - 15, 8, 'F');
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
     doc.text("Concepto", margin + 2, y);
-    doc.text("Monto", pageWidth / 2 + 10, y, { align: "right" });
-    doc.text("% del Total", pageWidth - margin - 2, y, { align: "right" });
+    doc.text("Monto", margin + 70, y, { align: "right" });
+    doc.text("% del Total", pageWidth / 2 - 17, y, { align: "right" });
     y += 6;
 
     // Table Rows
     doc.setFont("helvetica", "normal");
+    const startY = y;
     calculations.expensesWithPercentage.forEach((expense, index) => {
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
-      
       if (index % 2 === 0) {
         doc.setFillColor(248, 250, 252);
-        doc.rect(margin, y - 4, pageWidth - 2 * margin, 6, 'F');
+        doc.rect(margin, y - 4, pageWidth / 2 - margin - 15, 6, 'F');
       }
       
       const isBold = ["hipoteca", "remodelacion", "reembolso"].includes(expense.id);
       doc.setFont("helvetica", isBold ? "bold" : "normal");
       doc.text(expense.name, margin + 2, y);
-      doc.text(formatCurrency(expense.amount), pageWidth / 2 + 10, y, { align: "right" });
-      doc.text(`${expense.percentage.toFixed(2)}%`, pageWidth - margin - 2, y, { align: "right" });
+      doc.text(formatCurrency(expense.amount), margin + 70, y, { align: "right" });
+      doc.text(`${expense.percentage.toFixed(2)}%`, pageWidth / 2 - 17, y, { align: "right" });
       y += 6;
     });
 
     // Total de Gastos
     y += 2;
     doc.setFont("helvetica", "bold");
+    doc.setFillColor(241, 245, 249);
+    doc.rect(margin, y - 4, pageWidth / 2 - margin - 15, 7, 'F');
     doc.text("Total de Gastos (TG)", margin + 2, y);
-    doc.text(formatCurrency(calculations.totalExpenses), pageWidth / 2 + 10, y, { align: "right" });
-    
-    y += 15;
+    doc.text(formatCurrency(calculations.totalExpenses), margin + 70, y, { align: "right" });
+    doc.text(`${calculations.totalPercentage.toFixed(2)}%`, pageWidth / 2 - 17, y, { align: "right" });
 
+    // Right side - Resultados Financieros (al lado de gastos)
+    const rightX = pageWidth / 2 + 5;
+    const rightWidth = pageWidth / 2 - margin - 5;
+    let rightY = startY - 13;
+    
     // Resultados Financieros Box
     doc.setDrawColor(200);
     doc.setFillColor(248, 250, 252);
-    doc.roundedRect(pageWidth / 2 + 5, y - 5, pageWidth / 2 - margin - 5, 45, 3, 3, 'FD');
+    doc.roundedRect(rightX, rightY, rightWidth, 52, 3, 3, 'FD');
     
+    rightY += 8;
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.text("Resultados Financieros", pageWidth / 2 + 10, y + 3);
+    doc.text("Resultados Financieros", rightX + 5, rightY);
     
+    rightY += 10;
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("Base de Cálculo (BC)", pageWidth / 2 + 10, y + 12);
-    doc.text(formatCurrency(calculations.baseCalculo), pageWidth - margin - 5, y + 12, { align: "right" });
+    doc.text("Base de Cálculo (BC)", rightX + 5, rightY);
+    doc.text(formatCurrency(calculations.baseCalculo), rightX + rightWidth - 5, rightY, { align: "right" });
     
-    doc.text("Total de Gastos (TG)", pageWidth / 2 + 10, y + 18);
-    doc.text(formatCurrency(calculations.totalExpenses), pageWidth - margin - 5, y + 18, { align: "right" });
+    rightY += 6;
+    doc.text("Total de Gastos (TG)", rightX + 5, rightY);
+    doc.text(formatCurrency(calculations.totalExpenses), rightX + rightWidth - 5, rightY, { align: "right" });
     
     // Superávit/Déficit
+    rightY += 8;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
-    const statusText = calculations.isViable ? "Superávit / Déficit" : "Superávit / Déficit";
-    doc.text(statusText, pageWidth / 2 + 10, y + 26);
-    doc.setTextColor(calculations.isViable ? 34 : 220, calculations.isViable ? 139 : 38, calculations.isViable ? 34 : 38);
-    doc.text(formatCurrency(calculations.superavitDeficit), pageWidth - margin - 5, y + 26, { align: "right" });
+    doc.text("Superávit / Déficit", rightX + 5, rightY);
+    doc.setTextColor(colors.r, colors.g, colors.b);
+    doc.text(formatCurrency(calculations.superavitDeficit), rightX + rightWidth - 5, rightY, { align: "right" });
     doc.setTextColor(0);
     
+    rightY += 8;
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("Margen de Beneficio", pageWidth / 2 + 10, y + 33);
-    doc.text(`${calculations.marginBenefit.toFixed(2)}%`, pageWidth - margin - 5, y + 33, { align: "right" });
+    doc.text("Margen de Beneficio", rightX + 5, rightY);
+    doc.text(`${calculations.marginBenefit.toFixed(2)}%`, rightX + rightWidth - 5, rightY, { align: "right" });
     
-    doc.text("Retorno de Inversión (ROI)", pageWidth / 2 + 10, y + 39);
-    doc.text(`${calculations.roi.toFixed(2)}%`, pageWidth - margin - 5, y + 39, { align: "right" });
+    rightY += 6;
+    doc.text("Retorno de Inversión (ROI)", rightX + 5, rightY);
+    doc.text(`${calculations.roi.toFixed(2)}%`, rightX + rightWidth - 5, rightY, { align: "right" });
 
-    // Clasificación de Viabilidad
-    y += 50;
-    doc.setFillColor(calculations.isViable ? 220 : 254, calculations.isViable ? 252 : 226, calculations.isViable ? 231 : 226);
-    doc.roundedRect(pageWidth / 2 + 5, y, pageWidth / 2 - margin - 5, 18, 3, 3, 'F');
+    // Clasificación de Viabilidad (debajo de resultados)
+    rightY += 10;
+    doc.setFillColor(colors.bg[0], colors.bg[1], colors.bg[2]);
+    doc.roundedRect(rightX, rightY, rightWidth, 20, 3, 3, 'F');
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.text("Clasificación de Viabilidad", pageWidth / 2 + 10, y + 7);
+    doc.text("Clasificación de Viabilidad", rightX + 5, rightY + 8);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.setTextColor(calculations.isViable ? 34 : 220, calculations.isViable ? 139 : 38, calculations.isViable ? 34 : 38);
-    doc.text(calculations.isViable ? "Viable" : "No Viable", pageWidth / 2 + 10, y + 15);
+    doc.setFontSize(14);
+    doc.setTextColor(colors.r, colors.g, colors.b);
+    doc.text(getClassificationText(), rightX + 5, rightY + 16);
     doc.setTextColor(0);
 
-    // AI Insight
+    // AI Insight (al lado derecho, debajo de clasificación)
     if (aiInsight) {
-      y += 25;
+      rightY += 25;
       doc.setFillColor(248, 250, 252);
-      doc.roundedRect(margin, y, pageWidth - 2 * margin, 30, 3, 3, 'FD');
+      doc.roundedRect(rightX, rightY, rightWidth, 35, 3, 3, 'FD');
       
       doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
-      doc.text("Insight IA", margin + 5, y + 8);
+      doc.text("Insight IA", rightX + 5, rightY + 8);
       
-      doc.setFontSize(8);
+      doc.setFontSize(7);
       doc.setFont("helvetica", "normal");
-      const splitInsight = doc.splitTextToSize(aiInsight.replace(/[🎯✅⚠️🚫]/g, ''), pageWidth - 2 * margin - 10);
-      doc.text(splitInsight.slice(0, 3), margin + 5, y + 15);
+      const cleanInsight = aiInsight.replace(/[🎯✅⚠️🚫]/g, '').trim();
+      const splitInsight = doc.splitTextToSize(cleanInsight, rightWidth - 10);
+      doc.text(splitInsight.slice(0, 5), rightX + 5, rightY + 15);
     }
 
     // Footer
