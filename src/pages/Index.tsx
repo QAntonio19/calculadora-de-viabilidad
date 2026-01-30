@@ -497,10 +497,12 @@ const Index = () => {
                   <div className="flex items-center gap-2">
                     <Input
                       type="number"
-                      value={commissionPercentage || ""}
-                      onChange={(e) => setCommissionPercentage(Number(e.target.value) || 0)}
+                      value={commissionPercentage}
+                      onChange={(e) => setCommissionPercentage(Number(e.target.value))}
                       className="input-financial text-lg"
-                      placeholder="5"
+                      placeholder="0"
+                      min="0"
+                      max="100"
                     />
                     <span className="text-lg font-semibold text-muted-foreground">%</span>
                   </div>
